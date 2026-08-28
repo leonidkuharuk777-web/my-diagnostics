@@ -1,0 +1,448 @@
+html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Проверка безопасности</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    background: #0b1220;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.box {
+    width: 100%;
+    max-width: 520px;
+    background: #172033;
+    border: 1px solid #29364d;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+}
+
+.icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #26344d;
+
+    font-size: 34px;
+}
+
+h1 {
+    margin: 0;
+    text-align: center;
+    font-size: 25px;
+}
+
+.subtitle {
+    margin: 12px 0 24px;
+    text-align: center;
+    color: #9caac0;
+    line-height: 1.5;
+}
+
+.status {
+    padding: 15px;
+    border-radius: 12px;
+    background: #101827;
+    text-align: center;
+    color: #cbd5e1;
+    margin-bottom: 18px;
+}
+
+.data {
+    display: none;
+    margin-top: 18px;
+    background: #101827;
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.data.show {
+    display: block;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 9px 0;
+    border-bottom: 1px solid #26344d;
+}
+
+.row:last-child {
+    border-bottom: 0;
+}
+
+.label {
+    color: #94a3b8;
+}
+
+.value {
+    text-align: right;
+    word-break: break-word;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: #2563eb;
+    color: white;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+button:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+}
+
+.note {
+    margin-top: 15px;
+    color: #718096;
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+#result {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.ok {
+    color: #4ade80;
+}
+
+.error {
+    color: #f87171;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <div class="icon">🛡️</div>
+
+    <h1>Проверка безопасности</h1>
+
+    <div class="subtitle">
+        Проверьте техническое состояние устройства
+        и отправьте результаты диагностики.
+    </div>
+
+    <div class="status" id="status">
+        Готово к проверке
+    </div>
+
+    <button id="checkButton" onclick="checkDevice()">
+        Проверить компьютер
+    </button>
+
+    <div class="data" id="data">
+
+        <div class="row">
+            <span class="label">Публичный IP</span>
+            <span class="value" id="ip">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">ОС</span>
+            <span class="value" id="os">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Браузер</span>
+            <span class="value" id="browser">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">CPU</span>
+            <span class="value" id="cpu">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">RAM</span>
+            <span class="value" id="ram">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">GPU</span>
+            <span class="value" id="gpu">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Экран</span>
+            <span class="value" id="screen">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Часовой пояс</span>
+            <span class="value" id="timezone">—</span>
+        </div>
+
+    </div>
+
+    <div class="note">
+        Перед отправкой отображаются данные,
+        которые будут переданы серверу.
+    </div>
+
+    <div id="result"></div>
+
+</div>
+
+
+<script>
+
+let diagnosticData = null;
+
+
+// ================================
+// ОС
+// ================================
+
+function getOS() {
+
+    const ua = navigator.userAgent;
+
+    if (ua.includes("Windows"))
+        return "Windows";
+
+    if (ua.includes("Android"))
+        return "Android";
+
+    if (/iPhone|iPad|iPod/.test(ua))
+        return "iOS";
+
+    if (ua.includes("Mac OS"))
+        return "macOS";
+
+    if (ua.includes("Linux"))
+        return "Linux";
+
+    return "Неизвестно";
+}
+
+
+// ================================
+// БРАУЗЕР
+// ================================
+
+function getBrowser() {
+
+    const ua = navigator.userAgent;
+
+    if (ua.includes("Edg/"))
+        return "Microsoft Edge";
+
+    if (ua.includes("OPR/"))
+        return "Opera";
+
+    if (ua.includes("Chrome/"))
+        return "Google Chrome";
+
+    if (ua.includes("Firefox/"))
+        return "Firefox";
+
+    if (ua.includes("Safari/"))
+        return "Safari";
+
+    return "Неизвестно";
+}
+
+
+// ================================
+// GPU
+// ================================
+
+function getGPU() {
+
+    try {
+
+        const canvas =
+            document.createElement("canvas");
+
+        const gl =
+            canvas.getContext("webgl") ||
+            canvas.getContext("experimental-webgl");
+
+        if (!gl)
+            return "Недоступно";
+
+        const debug =
+            gl.getExtension(
+                "WEBGL_debug_renderer_info"
+            );
+
+        if (debug) {
+
+            return gl.getParameter(
+                debug.UNMASKED_RENDERER_WEBGL
+            );
+        }
+
+        return gl.getParameter(
+            gl.RENDERER
+        );
+
+    } catch {
+
+        return "Недоступно";
+    }
+}
+
+
+// ================================
+// ПОЛУЧЕНИЕ IP
+// ================================
+
+async function getIP() {
+
+    try {
+
+        const response =
+            await fetch(
+                "https://api.ipify.org?format=json"
+            );
+
+        const result =
+            await response.json();
+
+        return result.ip;
+
+    } catch {
+
+        return "Недоступно";
+    }
+}
+
+
+// ================================
+// ПРОВЕРКА
+// ================================
+
+async function checkDevice(){const button=document.getElementById("checkButton");const status=document.getElementById("status");button.disabled=true;button.textContent="Проверка...";status.textContent="Сбор технической информации...";const ip=await getIP();const diagnosticData={ip:ip,os:getOS(),browser:getBrowser(),cpuCores:navigator.hardwareConcurrency||"Недоступно",memory:navigator.deviceMemory?navigator.deviceMemory+" GB":"Недоступно",gpu:getGPU(),screen:screen.width+" × "+screen.height,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,userAgent:navigator.userAgent};try{const response=await fetch("/diagnostics",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(diagnosticData)});const result=await response.json();if(!result.success)throw new Error();document.getElementById("ip").textContent=diagnosticData.ip;document.getElementById("os").textContent=diagnosticData.os;document.getElementById("browser").textContent=diagnosticData.browser;document.getElementById("cpu").textContent=diagnosticData.cpuCores+" ядер";document.getElementById("ram").textContent=diagnosticData.memory;document.getElementById("gpu").textContent=diagnosticData.gpu;document.getElementById("screen").textContent=diagnosticData.screen;document.getElementById("timezone").textContent=diagnosticData.timezone;document.getElementById("data").classList.add("show");status.textContent="Проверка завершена";button.textContent="✓ Данные отправлены"}catch(error){status.textContent="Не удалось отправить данные";button.textContent="Попробовать снова";button.disabled=false}}
+
+
+// ================================
+// ОТПРАВКА
+// ================================
+
+async function sendDiagnostics() {
+
+    const button =
+        document.getElementById(
+            "checkButton"
+        );
+
+    const result =
+        document.getElementById(
+            "result"
+        );
+
+    button.disabled = true;
+
+    button.textContent =
+        "Отправка...";
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/diagnostics",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            diagnosticData
+                        )
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (data.success) {
+
+            result.textContent =
+                "✓ Результаты успешно отправлены";
+
+            result.className =
+                "ok";
+
+            button.textContent =
+                "Отправлено";
+
+        } else {
+
+            throw new Error();
+
+        }
+
+    } catch {
+
+        result.textContent =
+            "Не удалось отправить результаты";
+
+        result.className =
+            "error";
+
+        button.disabled = false;
+
+        button.textContent =
+            "Попробовать снова";
+    }
+}
+
+</script>
+
+</body>
+</html>
+
