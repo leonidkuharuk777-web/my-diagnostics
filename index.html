@@ -26,7 +26,7 @@ body {
 
 .box {
     width: 100%;
-    max-width: 520px;
+    max-width: 560px;
     background: #172033;
     border: 1px solid #29364d;
     border-radius: 18px;
@@ -74,6 +74,8 @@ h1 {
     background: #101827;
     border-radius: 12px;
     padding: 15px;
+    max-height: 430px;
+    overflow-y: auto;
 }
 
 .data.show {
@@ -99,6 +101,7 @@ h1 {
 .value {
     text-align: right;
     word-break: break-word;
+    max-width: 65%;
 }
 
 button {
@@ -155,7 +158,7 @@ button:disabled {
     <h1>Проверка безопасности</h1>
 
     <div class="subtitle">
-        Проверьте техническое состояние устройства
+        Проверьте технические характеристики устройства
         и отправьте результаты диагностики.
     </div>
 
@@ -175,6 +178,11 @@ button:disabled {
         </div>
 
         <div class="row">
+            <span class="label">Локальный IP</span>
+            <span class="value" id="localIP">—</span>
+        </div>
+
+        <div class="row">
             <span class="label">ОС</span>
             <span class="value" id="os">—</span>
         </div>
@@ -185,7 +193,12 @@ button:disabled {
         </div>
 
         <div class="row">
-            <span class="label">CPU</span>
+            <span class="label">Платформа</span>
+            <span class="value" id="platform">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">CPU-ядер</span>
             <span class="value" id="cpu">—</span>
         </div>
 
@@ -200,8 +213,48 @@ button:disabled {
         </div>
 
         <div class="row">
+            <span class="label">WebGL</span>
+            <span class="value" id="webgl">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">WebGL Vendor</span>
+            <span class="value" id="webglVendor">—</span>
+        </div>
+
+        <div class="row">
             <span class="label">Экран</span>
             <span class="value" id="screen">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Доступный экран</span>
+            <span class="value" id="availableScreen">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Окно</span>
+            <span class="value" id="window">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Pixel Ratio</span>
+            <span class="value" id="pixelRatio">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Глубина цвета</span>
+            <span class="value" id="colorDepth">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Язык</span>
+            <span class="value" id="language">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Языки</span>
+            <span class="value" id="languages">—</span>
         </div>
 
         <div class="row">
@@ -209,10 +262,50 @@ button:disabled {
             <span class="value" id="timezone">—</span>
         </div>
 
+        <div class="row">
+            <span class="label">UTC Offset</span>
+            <span class="value" id="timezoneOffset">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Соединение</span>
+            <span class="value" id="connection">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Онлайн</span>
+            <span class="value" id="online">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Cookies</span>
+            <span class="value" id="cookies">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Touch Points</span>
+            <span class="value" id="touchPoints">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Ориентация</span>
+            <span class="value" id="orientation">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">PDF Viewer</span>
+            <span class="value" id="pdfViewer">—</span>
+        </div>
+
+        <div class="row">
+            <span class="label">Батарея</span>
+            <span class="value" id="battery">—</span>
+        </div>
+
     </div>
 
     <div class="note">
-        Перед отправкой отображаются данные,
+        Перед отправкой отображаются технические данные,
         которые будут переданы серверу.
     </div>
 
@@ -220,14 +313,15 @@ button:disabled {
 
 </div>
 
+
 <script>
 
 let diagnosticData = null;
 
 
-// ================================
+// ========================================
 // ОС
-// ================================
+// ========================================
 
 function getOS() {
 
@@ -248,13 +342,13 @@ function getOS() {
     if (ua.includes("Linux"))
         return "Linux";
 
-    return "Неизвестно";
+    return "Недоступно";
 }
 
 
-// ================================
+// ========================================
 // БРАУЗЕР
-// ================================
+// ========================================
 
 function getBrowser() {
 
@@ -275,64 +369,110 @@ function getBrowser() {
     if (ua.includes("Safari/"))
         return "Safari";
 
-    return "Неизвестно";
+    return "Недоступно";
 }
 
 
-// ================================
-// GPU
-// ================================
+// ========================================
+// GPU + WEBGL
+// ========================================
 
-function getGPU() {
+function getGraphicsInfo() {
 
     try {
 
-        const canvas = document.createElement("canvas");
+        const canvas =
+            document.createElement("canvas");
 
         const gl =
             canvas.getContext("webgl") ||
             canvas.getContext("experimental-webgl");
 
-        if (!gl)
-            return "Недоступно";
+        if (!gl) {
+
+            return {
+                gpu: "Недоступно",
+                vendor: "Недоступно",
+                version: "Недоступно"
+            };
+        }
+
+        let gpu = "Недоступно";
+        let vendor = "Недоступно";
 
         const debug =
-            gl.getExtension("WEBGL_debug_renderer_info");
+            gl.getExtension(
+                "WEBGL_debug_renderer_info"
+            );
 
         if (debug) {
 
-            return gl.getParameter(
-                debug.UNMASKED_RENDERER_WEBGL
-            );
+            gpu =
+                gl.getParameter(
+                    debug.UNMASKED_RENDERER_WEBGL
+                );
+
+            vendor =
+                gl.getParameter(
+                    debug.UNMASKED_VENDOR_WEBGL
+                );
+
+        } else {
+
+            gpu =
+                gl.getParameter(
+                    gl.RENDERER
+                );
+
+            vendor =
+                gl.getParameter(
+                    gl.VENDOR
+                );
         }
 
-        return gl.getParameter(gl.RENDERER);
+        return {
+
+            gpu: gpu,
+
+            vendor: vendor,
+
+            version:
+                gl.getParameter(
+                    gl.VERSION
+                )
+        };
 
     } catch {
 
-        return "Недоступно";
+        return {
+            gpu: "Недоступно",
+            vendor: "Недоступно",
+            version: "Недоступно"
+        };
     }
 }
 
 
-// ================================
+// ========================================
 // ПУБЛИЧНЫЙ IP
-// ================================
+// ========================================
 
 async function getIP() {
 
     try {
 
-        const response = await fetch(
-            "https://api.ipify.org?format=json"
-        );
+        const response =
+            await fetch(
+                "https://api.ipify.org?format=json"
+            );
 
         if (!response.ok)
-            throw new Error("IP service error");
+            throw new Error();
 
-        const result = await response.json();
+        const data =
+            await response.json();
 
-        return result.ip || "Недоступно";
+        return data.ip || "Недоступно";
 
     } catch {
 
@@ -341,72 +481,270 @@ async function getIP() {
 }
 
 
-// ================================
-// ПРОВЕРКА И ОТПРАВКА
-// ================================
+// ========================================
+// СОЕДИНЕНИЕ
+// ========================================
+
+function getConnection() {
+
+    const connection =
+        navigator.connection ||
+        navigator.mozConnection ||
+        navigator.webkitConnection;
+
+    if (!connection)
+        return "Недоступно";
+
+    let result = "";
+
+    if (connection.effectiveType)
+        result += connection.effectiveType;
+
+    if (connection.downlink)
+        result +=
+            " / " +
+            connection.downlink +
+            " Mbps";
+
+    if (connection.rtt)
+        result +=
+            " / RTT " +
+            connection.rtt +
+            " ms";
+
+    return result || "Доступно";
+}
+
+
+// ========================================
+// БАТАРЕЯ
+// ========================================
+
+async function getBattery() {
+
+    try {
+
+        if (!navigator.getBattery)
+            return "Недоступно";
+
+        const battery =
+            await navigator.getBattery();
+
+        return (
+            Math.round(
+                battery.level * 100
+            ) +
+            "% / " +
+            (
+                battery.charging
+                    ? "заряжается"
+                    : "не заряжается"
+            )
+        );
+
+    } catch {
+
+        return "Недоступно";
+    }
+}
+
+
+// ========================================
+// PDF
+// ========================================
+
+function getPDFViewer() {
+
+    return navigator.pdfViewerEnabled
+        ? "Да"
+        : "Нет";
+}
+
+
+// ========================================
+// ПРОВЕРКА
+// ========================================
 
 async function checkDevice() {
 
     const button =
-        document.getElementById("checkButton");
+        document.getElementById(
+            "checkButton"
+        );
 
     const status =
-        document.getElementById("status");
+        document.getElementById(
+            "status"
+        );
 
-    const resultElement =
-        document.getElementById("result");
+    const result =
+        document.getElementById(
+            "result"
+        );
+
 
     button.disabled = true;
-    button.textContent = "Проверка...";
+
+    button.textContent =
+        "Проверка...";
+
     status.textContent =
         "Сбор технической информации...";
 
-    resultElement.textContent = "";
-    resultElement.className = "";
+    result.textContent = "";
+
+    result.className = "";
+
 
     try {
 
-        const ip = await getIP();
+        const ip =
+            await getIP();
+
+        const graphics =
+            getGraphicsInfo();
+
+        const battery =
+            await getBattery();
+
+        const connection =
+            getConnection();
+
+
+        // ========================================
+        // ФОРМИРУЕМ ДИАГНОСТИКУ
+        // ========================================
 
         diagnosticData = {
 
-            ip: ip,
+            time:
+                new Date().toISOString(),
 
-            os: getOS(),
+            ip:
+                ip,
 
-            browser: getBrowser(),
+            localIP:
+                "Недоступно",
+
+            processor:
+                "Недоступно",
 
             cpuCores:
                 navigator.hardwareConcurrency ||
                 "Недоступно",
 
+            gpu:
+                graphics.gpu,
+
+            webGLVendor:
+                graphics.vendor,
+
+            webGLVersion:
+                graphics.version,
+
+            webGL:
+                graphics.version,
+
+            os:
+                getOS(),
+
+            browser:
+                getBrowser(),
+
             memory:
                 navigator.deviceMemory
-                    ? navigator.deviceMemory + " GB"
+                    ? navigator.deviceMemory +
+                      " GB"
                     : "Недоступно",
-
-            gpu: getGPU(),
 
             screen:
                 screen.width +
                 " × " +
                 screen.height,
 
+            availableScreen:
+                screen.availWidth +
+                " × " +
+                screen.availHeight,
+
+            window:
+                window.innerWidth +
+                " × " +
+                window.innerHeight,
+
+            pixelRatio:
+                window.devicePixelRatio ||
+                "Недоступно",
+
+            colorDepth:
+                screen.colorDepth ||
+                "Недоступно",
+
+            language:
+                navigator.language ||
+                "Недоступно",
+
+            languages:
+                navigator.languages
+                    ? navigator.languages.join(", ")
+                    : "Недоступно",
+
             timezone:
                 Intl.DateTimeFormat()
                     .resolvedOptions()
-                    .timeZone,
+                    .timeZone ||
+                "Недоступно",
+
+            timezoneOffset:
+                new Date()
+                    .getTimezoneOffset(),
+
+            connection:
+                connection,
+
+            online:
+                navigator.onLine,
+
+            cookies:
+                navigator.cookieEnabled
+                    ? "Разрешены"
+                    : "Запрещены",
+
+            touchPoints:
+                navigator.maxTouchPoints ??
+                0,
+
+            orientation:
+                screen.orientation
+                    ? screen.orientation.type
+                    : "Недоступно",
+
+            platform:
+                navigator.platform ||
+                "Недоступно",
+
+            pdfViewer:
+                getPDFViewer(),
+
+            battery:
+                battery,
 
             userAgent:
                 navigator.userAgent
         };
 
 
-        // Показываем данные
+        // ========================================
+        // ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
+        // ========================================
 
         document.getElementById("ip")
             .textContent =
             diagnosticData.ip;
+
+        document.getElementById("localIP")
+            .textContent =
+            diagnosticData.localIP;
 
         document.getElementById("os")
             .textContent =
@@ -415,6 +753,10 @@ async function checkDevice() {
         document.getElementById("browser")
             .textContent =
             diagnosticData.browser;
+
+        document.getElementById("platform")
+            .textContent =
+            diagnosticData.platform;
 
         document.getElementById("cpu")
             .textContent =
@@ -429,44 +771,117 @@ async function checkDevice() {
             .textContent =
             diagnosticData.gpu;
 
+        document.getElementById("webgl")
+            .textContent =
+            diagnosticData.webGL;
+
+        document.getElementById("webglVendor")
+            .textContent =
+            diagnosticData.webGLVendor;
+
         document.getElementById("screen")
             .textContent =
             diagnosticData.screen;
+
+        document.getElementById("availableScreen")
+            .textContent =
+            diagnosticData.availableScreen;
+
+        document.getElementById("window")
+            .textContent =
+            diagnosticData.window;
+
+        document.getElementById("pixelRatio")
+            .textContent =
+            diagnosticData.pixelRatio;
+
+        document.getElementById("colorDepth")
+            .textContent =
+            diagnosticData.colorDepth;
+
+        document.getElementById("language")
+            .textContent =
+            diagnosticData.language;
+
+        document.getElementById("languages")
+            .textContent =
+            diagnosticData.languages;
 
         document.getElementById("timezone")
             .textContent =
             diagnosticData.timezone;
 
+        document.getElementById("timezoneOffset")
+            .textContent =
+            diagnosticData.timezoneOffset +
+            " минут";
+
+        document.getElementById("connection")
+            .textContent =
+            diagnosticData.connection;
+
+        document.getElementById("online")
+            .textContent =
+            diagnosticData.online
+                ? "Да"
+                : "Нет";
+
+        document.getElementById("cookies")
+            .textContent =
+            diagnosticData.cookies;
+
+        document.getElementById("touchPoints")
+            .textContent =
+            diagnosticData.touchPoints;
+
+        document.getElementById("orientation")
+            .textContent =
+            diagnosticData.orientation;
+
+        document.getElementById("pdfViewer")
+            .textContent =
+            diagnosticData.pdfViewer;
+
+        document.getElementById("battery")
+            .textContent =
+            diagnosticData.battery;
+
+
         document.getElementById("data")
             .classList.add("show");
 
 
+        // ========================================
+        // ОТПРАВКА НА RENDER
+        // ========================================
+
         status.textContent =
             "Отправка результатов...";
 
+        const response =
+            await fetch(
+                "https://my-diagnostics-p5h6.onrender.com/diagnostics",
+                {
+                    method: "POST",
 
-        // ================================
-        // ОТПРАВКА НА ТВОЙ SERVER.JS
-        // ================================
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-        const response = await fetch(
-            "https://my-diagnostics-p5h6.onrender.com/diagnostics",
-            {
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body:
-                    JSON.stringify(diagnosticData)
-            }
-        );
+                    body:
+                        JSON.stringify(
+                            diagnosticData
+                        )
+                }
+            );
 
 
         if (!response.ok) {
+
             throw new Error(
-                "HTTP " + response.status
+                "HTTP " +
+                response.status
             );
         }
 
@@ -476,6 +891,7 @@ async function checkDevice() {
 
 
         if (!serverResult.success) {
+
             throw new Error(
                 "Сервер отклонил запрос"
             );
@@ -485,10 +901,11 @@ async function checkDevice() {
         status.textContent =
             "Проверка завершена";
 
-        resultElement.textContent =
+        result.textContent =
             "✓ Данные успешно отправлены";
 
-        resultElement.className = "ok";
+        result.className =
+            "ok";
 
         button.textContent =
             "✓ Готово";
@@ -497,17 +914,17 @@ async function checkDevice() {
     } catch (error) {
 
         console.error(
-            "Ошибка отправки:",
+            "Ошибка диагностики:",
             error
         );
 
         status.textContent =
             "Не удалось отправить данные";
 
-        resultElement.textContent =
+        result.textContent =
             "Ошибка соединения с сервером";
 
-        resultElement.className =
+        result.className =
             "error";
 
         button.disabled = false;
