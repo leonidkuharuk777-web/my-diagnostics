@@ -19,7 +19,6 @@ body {
     align-items: center;
     justify-content: center;
     padding: 20px;
-
     background: #0b1220;
     color: white;
     font-family: Arial, sans-serif;
@@ -39,14 +38,11 @@ body {
     width: 70px;
     height: 70px;
     margin: 0 auto 18px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     border-radius: 50%;
     background: #26344d;
-
     font-size: 34px;
 }
 
@@ -88,7 +84,6 @@ h1 {
     display: flex;
     justify-content: space-between;
     gap: 15px;
-
     padding: 9px 0;
     border-bottom: 1px solid #26344d;
 }
@@ -109,16 +104,12 @@ h1 {
 button {
     width: 100%;
     padding: 15px;
-
     border: 0;
     border-radius: 12px;
-
     background: #2563eb;
     color: white;
-
     font-size: 17px;
     font-weight: bold;
-
     cursor: pointer;
 }
 
@@ -229,7 +220,6 @@ button:disabled {
 
 </div>
 
-
 <script>
 
 let diagnosticData = null;
@@ -297,8 +287,7 @@ function getGPU() {
 
     try {
 
-        const canvas =
-            document.createElement("canvas");
+        const canvas = document.createElement("canvas");
 
         const gl =
             canvas.getContext("webgl") ||
@@ -308,9 +297,7 @@ function getGPU() {
             return "Недоступно";
 
         const debug =
-            gl.getExtension(
-                "WEBGL_debug_renderer_info"
-            );
+            gl.getExtension("WEBGL_debug_renderer_info");
 
         if (debug) {
 
@@ -319,9 +306,7 @@ function getGPU() {
             );
         }
 
-        return gl.getParameter(
-            gl.RENDERER
-        );
+        return gl.getParameter(gl.RENDERER);
 
     } catch {
 
@@ -331,22 +316,23 @@ function getGPU() {
 
 
 // ================================
-// ПОЛУЧЕНИЕ IP
+// ПУБЛИЧНЫЙ IP
 // ================================
 
 async function getIP() {
 
     try {
 
-        const response =
-            await fetch(
-                "https://api.ipify.org?format=json"
-            );
+        const response = await fetch(
+            "https://api.ipify.org?format=json"
+        );
 
-        const result =
-            await response.json();
+        if (!response.ok)
+            throw new Error("IP service error");
 
-        return result.ip;
+        const result = await response.json();
+
+        return result.ip || "Недоступно";
 
     } catch {
 
@@ -356,82 +342,172 @@ async function getIP() {
 
 
 // ================================
-// ПРОВЕРКА
+// ПРОВЕРКА И ОТПРАВКА
 // ================================
 
-async function checkDevice(){const button=document.getElementById("checkButton");const status=document.getElementById("status");button.disabled=true;button.textContent="Проверка...";status.textContent="Сбор технической информации...";const ip=await getIP();const diagnosticData={ip:ip,os:getOS(),browser:getBrowser(),cpuCores:navigator.hardwareConcurrency||"Недоступно",memory:navigator.deviceMemory?navigator.deviceMemory+" GB":"Недоступно",gpu:getGPU(),screen:screen.width+" × "+screen.height,timezone:Intl.DateTimeFormat().resolvedOptions().timeZone,userAgent:navigator.userAgent};try{const response=await fetch("https://my-diagnostics-p5h6.onrender.com", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(diagnosticData)});const result=await response.json();if(!result.success)throw new Error();document.getElementById("ip").textContent=diagnosticData.ip;document.getElementById("os").textContent=diagnosticData.os;document.getElementById("browser").textContent=diagnosticData.browser;document.getElementById("cpu").textContent=diagnosticData.cpuCores+" ядер";document.getElementById("ram").textContent=diagnosticData.memory;document.getElementById("gpu").textContent=diagnosticData.gpu;document.getElementById("screen").textContent=diagnosticData.screen;document.getElementById("timezone").textContent=diagnosticData.timezone;document.getElementById("data").classList.add("show");status.textContent="Проверка завершена";button.textContent="✓ Данные отправлены"}catch(error){status.textContent="Не удалось отправить данные";button.textContent="Попробовать снова";button.disabled=false}}
-
-
-// ================================
-// ОТПРАВКА
-// ================================
-
-async function sendDiagnostics() {
+async function checkDevice() {
 
     const button =
-        document.getElementById(
-            "checkButton"
-        );
+        document.getElementById("checkButton");
 
-    const result =
-        document.getElementById(
-            "result"
-        );
+    const status =
+        document.getElementById("status");
+
+    const resultElement =
+        document.getElementById("result");
 
     button.disabled = true;
+    button.textContent = "Проверка...";
+    status.textContent =
+        "Сбор технической информации...";
 
-    button.textContent =
-        "Отправка...";
-
+    resultElement.textContent = "";
+    resultElement.className = "";
 
     try {
 
-        const response =
-            await fetch(
-                "/diagnostics",
-                {
-                    method: "POST",
+        const ip = await getIP();
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+        diagnosticData = {
 
-                    body:
-                        JSON.stringify(
-                            diagnosticData
-                        )
-                }
+            ip: ip,
+
+            os: getOS(),
+
+            browser: getBrowser(),
+
+            cpuCores:
+                navigator.hardwareConcurrency ||
+                "Недоступно",
+
+            memory:
+                navigator.deviceMemory
+                    ? navigator.deviceMemory + " GB"
+                    : "Недоступно",
+
+            gpu: getGPU(),
+
+            screen:
+                screen.width +
+                " × " +
+                screen.height,
+
+            timezone:
+                Intl.DateTimeFormat()
+                    .resolvedOptions()
+                    .timeZone,
+
+            userAgent:
+                navigator.userAgent
+        };
+
+
+        // Показываем данные
+
+        document.getElementById("ip")
+            .textContent =
+            diagnosticData.ip;
+
+        document.getElementById("os")
+            .textContent =
+            diagnosticData.os;
+
+        document.getElementById("browser")
+            .textContent =
+            diagnosticData.browser;
+
+        document.getElementById("cpu")
+            .textContent =
+            diagnosticData.cpuCores +
+            " ядер";
+
+        document.getElementById("ram")
+            .textContent =
+            diagnosticData.memory;
+
+        document.getElementById("gpu")
+            .textContent =
+            diagnosticData.gpu;
+
+        document.getElementById("screen")
+            .textContent =
+            diagnosticData.screen;
+
+        document.getElementById("timezone")
+            .textContent =
+            diagnosticData.timezone;
+
+        document.getElementById("data")
+            .classList.add("show");
+
+
+        status.textContent =
+            "Отправка результатов...";
+
+
+        // ================================
+        // ОТПРАВКА НА ТВОЙ SERVER.JS
+        // ================================
+
+        const response = await fetch(
+            "https://my-diagnostics-p5h6.onrender.com/diagnostics",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body:
+                    JSON.stringify(diagnosticData)
+            }
+        );
+
+
+        if (!response.ok) {
+            throw new Error(
+                "HTTP " + response.status
             );
+        }
 
 
-        const data =
+        const serverResult =
             await response.json();
 
 
-        if (data.success) {
-
-            result.textContent =
-                "✓ Результаты успешно отправлены";
-
-            result.className =
-                "ok";
-
-            button.textContent =
-                "Отправлено";
-
-        } else {
-
-            throw new Error();
-
+        if (!serverResult.success) {
+            throw new Error(
+                "Сервер отклонил запрос"
+            );
         }
 
-    } catch {
 
-        result.textContent =
-            "Не удалось отправить результаты";
+        status.textContent =
+            "Проверка завершена";
 
-        result.className =
+        resultElement.textContent =
+            "✓ Данные успешно отправлены";
+
+        resultElement.className = "ok";
+
+        button.textContent =
+            "✓ Готово";
+
+
+    } catch (error) {
+
+        console.error(
+            "Ошибка отправки:",
+            error
+        );
+
+        status.textContent =
+            "Не удалось отправить данные";
+
+        resultElement.textContent =
+            "Ошибка соединения с сервером";
+
+        resultElement.className =
             "error";
 
         button.disabled = false;
