@@ -3,27 +3,54 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 
+const PORT = process.env.PORT || 3000;
+
+const diagnosticsDir = path.join(__dirname, "diagnostics");
+
+// Создаём папку для диагностики при запуске
+if (!fs.existsSync(diagnosticsDir)) {
+    fs.mkdirSync(diagnosticsDir, { recursive: true });
+}
+
+
 const server = http.createServer((req, res) => {
 
-    // =========================
+    // ========================================
     // CORS
-    // =========================
+    // ========================================
 
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, OPTIONS"
+    );
+    res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type"
+    );
+
+
+    // ========================================
+    // OPTIONS / CORS PREFLIGHT
+    // ========================================
 
     if (req.method === "OPTIONS") {
+
         res.writeHead(204);
         res.end();
+
         return;
     }
 
-    // =========================
-    // ГЛАВНАЯ
-    // =========================
 
-    if (req.method === "GET" && req.url === "/") {
+    // ========================================
+    // ГЛАВНАЯ
+    // ========================================
+
+    if (
+        req.method === "GET" &&
+        req.url === "/"
+    ) {
 
         fs.readFile(
             path.join(__dirname, "index.html"),
@@ -31,16 +58,28 @@ const server = http.createServer((req, res) => {
             (err, html) => {
 
                 if (err) {
+
+                    console.error(
+                        "Ошибка чтения index.html:",
+                        err
+                    );
+
                     res.writeHead(500, {
-                        "Content-Type": "text/plain; charset=utf-8"
+                        "Content-Type":
+                            "text/plain; charset=utf-8"
                     });
 
-                    res.end("index.html не найден");
+                    res.end(
+                        "index.html не найден"
+                    );
+
                     return;
                 }
 
+
                 res.writeHead(200, {
-                    "Content-Type": "text/html; charset=utf-8"
+                    "Content-Type":
+                        "text/html; charset=utf-8"
                 });
 
                 res.end(html);
@@ -50,9 +89,35 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // =========================
-    // ДИАГНОСТИКА
-    // =========================
+
+    // ========================================
+    // ПРОВЕРКА СЕРВЕРА
+    // ========================================
+
+    if (
+        req.method === "GET" &&
+        req.url === "/health"
+    ) {
+
+        res.writeHead(200, {
+            "Content-Type":
+                "application/json; charset=utf-8"
+        });
+
+        res.end(
+            JSON.stringify({
+                online: true,
+                server: "my-diagnostics"
+            })
+        );
+
+        return;
+    }
+
+
+    // ========================================
+    // ПОЛУЧЕНИЕ ДИАГНОСТИКИ
+    // ========================================
 
     if (
         req.method === "POST" &&
@@ -61,150 +126,178 @@ const server = http.createServer((req, res) => {
 
         let body = "";
 
+
         req.on("data", chunk => {
 
-            body += chunk;
+            body += chunk.toString();
 
-            if (body.length > 100000) {
+
+            // Защита от слишком большого запроса
+            if (body.length > 500000) {
+
+                res.writeHead(413, {
+                    "Content-Type":
+                        "application/json; charset=utf-8"
+                });
+
+                res.end(
+                    JSON.stringify({
+                        success: false,
+                        error: "Слишком большой запрос"
+                    })
+                );
+
                 req.destroy();
+
+                return;
             }
         });
+
 
         req.on("end", () => {
 
             try {
 
+                // ========================================
+                // JSON
+                // ========================================
+
                 const data = JSON.parse(body);
 
-                // =========================
+
+                // ========================================
                 // СОЗДАЁМ ЗАПИСЬ
-                // =========================
+                // ========================================
 
                 const record = {
 
+                    // Время получения сервером
                     time:
                         new Date().toISOString(),
 
+
+                    // Публичный IP,
+                    // который передал клиент
                     ip:
-                        data.ip || "Недоступно",
+                        data.ip ?? "Недоступно",
 
+
+                    // Сетевые данные
                     localIP:
-                        data.localIP || "Недоступно",
+                        data.localIP ?? "Недоступно",
 
+                    connection:
+                        data.connection ?? "Недоступно",
+
+                    online:
+                        data.online ?? "Недоступно",
+
+
+                    // Система
                     os:
-                        data.os || "Недоступно",
+                        data.os ?? "Недоступно",
 
-                    browser:
-                        data.browser || "Недоступно",
+                    platform:
+                        data.platform ?? "Недоступно",
 
                     processor:
-                        data.processor || "Недоступно",
+                        data.processor ?? "Недоступно",
 
                     cpuCores:
                         data.cpuCores ?? "Недоступно",
 
                     memory:
-                        data.memory || "Недоступно",
+                        data.memory ?? "Недоступно",
 
+
+                    // Браузер
+                    browser:
+                        data.browser ?? "Недоступно",
+
+                    userAgent:
+                        data.userAgent ?? "Недоступно",
+
+                    language:
+                        data.language ?? "Недоступно",
+
+                    languages:
+                        data.languages ?? "Недоступно",
+
+                    timezone:
+                        data.timezone ?? "Недоступно",
+
+
+                    // Графика
                     gpu:
-                        data.gpu || "Недоступно",
+                        data.gpu ?? "Недоступно",
 
                     webGL:
-                        data.webGL || "Недоступно",
+                        data.webGL ?? "Недоступно",
 
                     webGLVendor:
-                        data.webGLVendor || "Недоступно",
+                        data.webGLVendor ?? "Недоступно",
 
                     webGLRenderer:
-                        data.webGLRenderer || "Недоступно",
+                        data.webGLRenderer ?? "Недоступно",
 
+
+                    // Экран
                     screen:
-                        data.screen || "Недоступно",
+                        data.screen ?? "Недоступно",
 
                     window:
-                        data.window || "Недоступно",
+                        data.window ?? "Недоступно",
 
                     pixelRatio:
                         data.pixelRatio ?? "Недоступно",
 
-                    language:
-                        data.language || "Недоступно",
+                    orientation:
+                        data.orientation ?? "Недоступно",
 
-                    languages:
-                        data.languages || "Недоступно",
 
-                    timezone:
-                        data.timezone || "Недоступно",
-
-                    connection:
-                        data.connection || "Недоступно",
-
-                    online:
-                        data.online ?? "Недоступно",
-
+                    // Ввод
                     touchPoints:
                         data.touchPoints ?? "Недоступно",
 
-                    platform:
-                        data.platform || "Недоступно",
 
+                    // Хранилище
                     cookies:
-                        data.cookies || "Недоступно",
+                        data.cookies ?? "Недоступно",
 
                     localStorage:
-                        data.localStorage || "Недоступно",
+                        data.localStorage ?? "Недоступно",
 
-                    orientation:
-                        data.orientation || "Недоступно",
 
+                    // Настройки
                     darkMode:
-                        data.darkMode || "Недоступно",
-
-                    userAgent:
-                        data.userAgent || "Недоступно"
+                        data.darkMode ?? "Недоступно"
                 };
 
 
-                // =========================
-                // ПАПКА DIAGNOSTICS
-                // =========================
-
-                const diagnosticsDir =
-                    path.join(
-                        __dirname,
-                        "diagnostics"
-                    );
-
-
-                if (!fs.existsSync(diagnosticsDir)) {
-
-                    fs.mkdirSync(
-                        diagnosticsDir,
-                        {
-                            recursive: true
-                        }
-                    );
-                }
-
-
-                // =========================
-                // ИМЯ ФАЙЛА
-                // =========================
+                // ========================================
+                // УНИКАЛЬНОЕ ИМЯ ФАЙЛА
+                // ========================================
 
                 const now = new Date();
 
                 const filename =
                     "diagnostic-" +
 
-                    now.getFullYear() + "-" +
+                    now.getFullYear() +
+
+                    "-" +
 
                     String(
                         now.getMonth() + 1
-                    ).padStart(2, "0") + "-" +
+                    ).padStart(2, "0") +
+
+                    "-" +
 
                     String(
                         now.getDate()
-                    ).padStart(2, "0") + "-" +
+                    ).padStart(2, "0") +
+
+                    "-" +
 
                     String(
                         now.getHours()
@@ -227,41 +320,39 @@ const server = http.createServer((req, res) => {
                     ".json";
 
 
-                // =========================
-                // СОХРАНЕНИЕ JSON
-                // =========================
-
-                fs.writeFileSync(
-
+                const filePath =
                     path.join(
                         diagnosticsDir,
                         filename
-                    ),
+                    );
 
+
+                // ========================================
+                // СОХРАНЕНИЕ
+                // ========================================
+
+                fs.writeFileSync(
+                    filePath,
                     JSON.stringify(
                         record,
                         null,
                         2
                     ),
-
                     "utf8"
                 );
 
 
-                // =========================
+                // ========================================
                 // КОНСОЛЬ
-                // =========================
+                // ========================================
 
                 console.log("");
-
                 console.log(
                     "========================================"
                 );
-
                 console.log(
                     "          ===== ДИАГНОСТИКА ====="
                 );
-
                 console.log(
                     "========================================"
                 );
@@ -269,11 +360,6 @@ const server = http.createServer((req, res) => {
                 console.log(
                     "Публичный IP:",
                     record.ip
-                );
-
-                console.log(
-                    "Локальный IP:",
-                    record.localIP
                 );
 
                 console.log(
@@ -317,11 +403,6 @@ const server = http.createServer((req, res) => {
                 );
 
                 console.log(
-                    "WebGL Version:",
-                    record.webGL
-                );
-
-                console.log(
                     "Экран:",
                     record.screen
                 );
@@ -342,7 +423,7 @@ const server = http.createServer((req, res) => {
                 );
 
                 console.log(
-                    "Языки:",
+                    "Все языки:",
                     record.languages
                 );
 
@@ -358,11 +439,7 @@ const server = http.createServer((req, res) => {
 
                 console.log(
                     "Онлайн:",
-                    record.online === true
-                        ? "Да"
-                        : record.online === false
-                            ? "Нет"
-                            : record.online
+                    record.online
                 );
 
                 console.log(
@@ -386,46 +463,34 @@ const server = http.createServer((req, res) => {
                 );
 
                 console.log(
-                    "Ориентация:",
-                    record.orientation
-                );
-
-                console.log(
                     "Тёмная тема:",
                     record.darkMode
                 );
 
                 console.log(
-                    "User Agent:",
-                    record.userAgent
+                    "Файл:",
+                    filename
                 );
 
                 console.log(
                     "========================================"
                 );
-
-                console.log(
-                    "Файл сохранён:",
-                    filename
-                );
-
                 console.log("");
 
 
-                // =========================
+                // ========================================
                 // ОТВЕТ
-                // =========================
+                // ========================================
 
                 res.writeHead(200, {
-
                     "Content-Type":
                         "application/json; charset=utf-8"
-
                 });
 
                 res.end(
                     JSON.stringify({
-                        success: true
+                        success: true,
+                        file: filename
                     })
                 );
 
@@ -433,20 +498,20 @@ const server = http.createServer((req, res) => {
             } catch (error) {
 
                 console.error(
-                    "Ошибка диагностики:",
+                    "Ошибка обработки диагностики:",
                     error
                 );
 
-                res.writeHead(400, {
 
+                res.writeHead(400, {
                     "Content-Type":
                         "application/json; charset=utf-8"
-
                 });
 
                 res.end(
                     JSON.stringify({
-                        success: false
+                        success: false,
+                        error: "Некорректный JSON"
                     })
                 );
             }
@@ -456,9 +521,9 @@ const server = http.createServer((req, res) => {
     }
 
 
-    // =========================
+    // ========================================
     // 404
-    // =========================
+    // ========================================
 
     res.writeHead(404, {
         "Content-Type":
@@ -466,16 +531,12 @@ const server = http.createServer((req, res) => {
     });
 
     res.end("404 Not Found");
-
 });
 
 
-// =========================
+// ========================================
 // ЗАПУСК
-// =========================
-
-const PORT =
-    process.env.PORT || 3000;
+// ========================================
 
 server.listen(
     PORT,
@@ -484,18 +545,42 @@ server.listen(
 
         console.log("");
         console.log(
-            "=============================="
+            "========================================"
         );
         console.log(
-            "       СЕРВЕР ЗАПУЩЕН"
+            "             СЕРВЕР ЗАПУЩЕН"
         );
         console.log(
-            "=============================="
+            "========================================"
         );
-        console.log("");
+
         console.log(
             "Порт:",
             PORT
+        );
+
+        console.log(
+            "Локально:",
+            "http://localhost:" + PORT
+        );
+
+        console.log(
+            "Диагностика:",
+            "/diagnostics"
+        );
+
+        console.log(
+            "Проверка:",
+            "/health"
+        );
+
+        console.log(
+            "Сохранение:",
+            diagnosticsDir
+        );
+
+        console.log(
+            "========================================"
         );
         console.log("");
     }
