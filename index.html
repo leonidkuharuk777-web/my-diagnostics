@@ -3,148 +3,142 @@ html
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>Проверка безопасности</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:#0b1220;
+    color:#fff;
+    font-family:Arial,sans-serif
 }
 
-body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: #0b1220;
-    color: white;
-    font-family: Arial, sans-serif;
+.box{
+    width:100%;
+    max-width:560px;
+    background:#172033;
+    border:1px solid #29364d;
+    border-radius:18px;
+    padding:28px;
+    box-shadow:0 20px 60px rgba(0,0,0,.35)
 }
 
-.box {
-    width: 100%;
-    max-width: 560px;
-    background: #172033;
-    border: 1px solid #29364d;
-    border-radius: 18px;
-    padding: 28px;
-    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+.icon{
+    width:70px;
+    height:70px;
+    margin:0 auto 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:#26344d;
+    font-size:34px
 }
 
-.icon {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #26344d;
-    font-size: 34px;
+h1{
+    margin:0;
+    text-align:center;
+    font-size:25px
 }
 
-h1 {
-    margin: 0;
-    text-align: center;
-    font-size: 25px;
+.subtitle{
+    margin:12px 0 24px;
+    text-align:center;
+    color:#9caac0;
+    line-height:1.5
 }
 
-.subtitle {
-    margin: 12px 0 24px;
-    text-align: center;
-    color: #9caac0;
-    line-height: 1.5;
+.status{
+    padding:15px;
+    border-radius:12px;
+    background:#101827;
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:18px
 }
 
-.status {
-    padding: 15px;
-    border-radius: 12px;
-    background: #101827;
-    text-align: center;
-    color: #cbd5e1;
-    margin-bottom: 18px;
+.data{
+    display:none;
+    margin-top:18px;
+    background:#101827;
+    border-radius:12px;
+    padding:15px
 }
 
-.data {
-    display: none;
-    margin-top: 18px;
-    background: #101827;
-    border-radius: 12px;
-    padding: 15px;
-    max-height: 430px;
-    overflow-y: auto;
+.data.show{
+    display:block
 }
 
-.data.show {
-    display: block;
+.row{
+    display:flex;
+    justify-content:space-between;
+    gap:15px;
+    padding:9px 0;
+    border-bottom:1px solid #26344d
 }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 9px 0;
-    border-bottom: 1px solid #26344d;
+.row:last-child{
+    border-bottom:0
 }
 
-.row:last-child {
-    border-bottom: 0;
+.label{
+    color:#94a3b8;
+    flex-shrink:0
 }
 
-.label {
-    color: #94a3b8;
+.value{
+    text-align:right;
+    word-break:break-word
 }
 
-.value {
-    text-align: right;
-    word-break: break-word;
-    max-width: 65%;
+button{
+    width:100%;
+    padding:15px;
+    border:0;
+    border-radius:12px;
+    background:#2563eb;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer
 }
 
-button {
-    width: 100%;
-    padding: 15px;
-    border: 0;
-    border-radius: 12px;
-    background: #2563eb;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
+button:hover{
+    background:#1d4ed8
 }
 
-button:hover {
-    background: #1d4ed8;
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed
 }
 
-button:disabled {
-    opacity: .55;
-    cursor: not-allowed;
+.note{
+    margin-top:15px;
+    color:#718096;
+    font-size:12px;
+    line-height:1.5;
+    text-align:center
 }
 
-.note {
-    margin-top: 15px;
-    color: #718096;
-    font-size: 12px;
-    line-height: 1.5;
-    text-align: center;
+.ok{
+    color:#4ade80;
+    text-align:center;
+    margin-top:15px
 }
 
-#result {
-    margin-top: 15px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.ok {
-    color: #4ade80;
-}
-
-.error {
-    color: #f87171;
+.error{
+    color:#f87171;
+    text-align:center;
+    margin-top:15px
 }
 </style>
 </head>
@@ -153,288 +147,268 @@ button:disabled {
 
 <div class="box">
 
-    <div class="icon">🛡️</div>
+<div class="icon">🛡️</div>
 
-    <h1>Проверка безопасности</h1>
+<h1>Проверка безопасности</h1>
 
-    <div class="subtitle">
-        Проверьте технические характеристики устройства
-        и отправьте результаты диагностики.
-    </div>
+<div class="subtitle">
+Проверьте технические параметры устройства
+</div>
 
-    <div class="status" id="status">
-        Готово к проверке
-    </div>
+<div class="status" id="status">
+Готово к проверке
+</div>
 
-    <button id="checkButton" onclick="checkDevice()">
-        Проверить компьютер
-    </button>
+<button id="checkButton" onclick="checkDevice()">
+Проверить компьютер
+</button>
 
-    <div class="data" id="data">
+<div class="data" id="data">
 
-        <div class="row">
-            <span class="label">Публичный IP</span>
-            <span class="value" id="ip">—</span>
-        </div>
+<div class="row">
+<span class="label">Публичный IP</span>
+<span class="value" id="ip">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Локальный IP</span>
-            <span class="value" id="localIP">—</span>
-        </div>
+<div class="row">
+<span class="label">ОС</span>
+<span class="value" id="os">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">ОС</span>
-            <span class="value" id="os">—</span>
-        </div>
+<div class="row">
+<span class="label">Браузер</span>
+<span class="value" id="browser">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Браузер</span>
-            <span class="value" id="browser">—</span>
-        </div>
+<div class="row">
+<span class="label">CPU cores</span>
+<span class="value" id="cpu">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Платформа</span>
-            <span class="value" id="platform">—</span>
-        </div>
+<div class="row">
+<span class="label">RAM</span>
+<span class="value" id="ram">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">CPU-ядер</span>
-            <span class="value" id="cpu">—</span>
-        </div>
+<div class="row">
+<span class="label">GPU</span>
+<span class="value" id="gpu">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">RAM</span>
-            <span class="value" id="ram">—</span>
-        </div>
+<div class="row">
+<span class="label">WebGL Vendor</span>
+<span class="value" id="webglVendor">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">GPU</span>
-            <span class="value" id="gpu">—</span>
-        </div>
+<div class="row">
+<span class="label">WebGL Renderer</span>
+<span class="value" id="webglRenderer">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">WebGL</span>
-            <span class="value" id="webgl">—</span>
-        </div>
+<div class="row">
+<span class="label">WebGL Version</span>
+<span class="value" id="webglVersion">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">WebGL Vendor</span>
-            <span class="value" id="webglVendor">—</span>
-        </div>
+<div class="row">
+<span class="label">Экран</span>
+<span class="value" id="screen">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Экран</span>
-            <span class="value" id="screen">—</span>
-        </div>
+<div class="row">
+<span class="label">Окно</span>
+<span class="value" id="windowSize">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Доступный экран</span>
-            <span class="value" id="availableScreen">—</span>
-        </div>
+<div class="row">
+<span class="label">Pixel Ratio</span>
+<span class="value" id="pixelRatio">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Окно</span>
-            <span class="value" id="window">—</span>
-        </div>
+<div class="row">
+<span class="label">Язык</span>
+<span class="value" id="language">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Pixel Ratio</span>
-            <span class="value" id="pixelRatio">—</span>
-        </div>
+<div class="row">
+<span class="label">Все языки</span>
+<span class="value" id="languages">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Глубина цвета</span>
-            <span class="value" id="colorDepth">—</span>
-        </div>
+<div class="row">
+<span class="label">Часовой пояс</span>
+<span class="value" id="timezone">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Язык</span>
-            <span class="value" id="language">—</span>
-        </div>
+<div class="row">
+<span class="label">Соединение</span>
+<span class="value" id="connection">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Языки</span>
-            <span class="value" id="languages">—</span>
-        </div>
+<div class="row">
+<span class="label">Онлайн</span>
+<span class="value" id="online">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Часовой пояс</span>
-            <span class="value" id="timezone">—</span>
-        </div>
+<div class="row">
+<span class="label">Touch Points</span>
+<span class="value" id="touchPoints">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">UTC Offset</span>
-            <span class="value" id="timezoneOffset">—</span>
-        </div>
+<div class="row">
+<span class="label">Platform</span>
+<span class="value" id="platform">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Соединение</span>
-            <span class="value" id="connection">—</span>
-        </div>
+<div class="row">
+<span class="label">Cookies</span>
+<span class="value" id="cookies">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Онлайн</span>
-            <span class="value" id="online">—</span>
-        </div>
+<div class="row">
+<span class="label">LocalStorage</span>
+<span class="value" id="localStorage">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Cookies</span>
-            <span class="value" id="cookies">—</span>
-        </div>
+<div class="row">
+<span class="label">Ориентация</span>
+<span class="value" id="orientation">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Touch Points</span>
-            <span class="value" id="touchPoints">—</span>
-        </div>
+<div class="row">
+<span class="label">Тёмная тема</span>
+<span class="value" id="darkMode">—</span>
+</div>
 
-        <div class="row">
-            <span class="label">Ориентация</span>
-            <span class="value" id="orientation">—</span>
-        </div>
-
-        <div class="row">
-            <span class="label">PDF Viewer</span>
-            <span class="value" id="pdfViewer">—</span>
-        </div>
-
-        <div class="row">
-            <span class="label">Батарея</span>
-            <span class="value" id="battery">—</span>
-        </div>
-
-    </div>
-
-    <div class="note">
-        Перед отправкой отображаются технические данные,
-        которые будут переданы серверу.
-    </div>
-
-    <div id="result"></div>
+<div class="row">
+<span class="label">User Agent</span>
+<span class="value" id="userAgent">—</span>
+</div>
 
 </div>
 
+<div class="note">
+Показываются только параметры, доступные веб-браузеру.
+</div>
+
+<div id="result"></div>
+
+</div>
 
 <script>
 
 let diagnosticData = null;
 
 
-// ========================================
-// ОС
-// ========================================
+/* =========================
+   ОС
+========================= */
 
-function getOS() {
+function getOS(){
 
-    const ua = navigator.userAgent;
+    const ua=navigator.userAgent;
 
-    if (ua.includes("Windows"))
-        return "Windows";
+    if(/Windows NT/.test(ua)) return "Windows";
 
-    if (ua.includes("Android"))
-        return "Android";
+    if(/Android/.test(ua)) return "Android";
 
-    if (/iPhone|iPad|iPod/.test(ua))
-        return "iOS";
+    if(/iPhone|iPad|iPod/.test(ua)) return "iOS";
 
-    if (ua.includes("Mac OS"))
-        return "macOS";
+    if(/Mac OS X/.test(ua)) return "macOS";
 
-    if (ua.includes("Linux"))
-        return "Linux";
+    if(/Linux/.test(ua)) return "Linux";
 
-    return "Недоступно";
+    return "Неизвестно";
 }
 
 
-// ========================================
-// БРАУЗЕР
-// ========================================
+/* =========================
+   БРАУЗЕР
+========================= */
 
-function getBrowser() {
+function getBrowser(){
 
-    const ua = navigator.userAgent;
+    const ua=navigator.userAgent;
 
-    if (ua.includes("Edg/"))
-        return "Microsoft Edge";
+    let match;
 
-    if (ua.includes("OPR/"))
-        return "Opera";
+    if((match=ua.match(/Edg\/([\d.]+)/)))
+        return "Microsoft Edge " + match[1];
 
-    if (ua.includes("Chrome/"))
-        return "Google Chrome";
+    if((match=ua.match(/OPR\/([\d.]+)/)))
+        return "Opera " + match[1];
 
-    if (ua.includes("Firefox/"))
-        return "Firefox";
+    if((match=ua.match(/Chrome\/([\d.]+)/)))
+        return "Google Chrome " + match[1];
 
-    if (ua.includes("Safari/"))
-        return "Safari";
+    if((match=ua.match(/Firefox\/([\d.]+)/)))
+        return "Firefox " + match[1];
 
-    return "Недоступно";
+    if((match=ua.match(/Version\/([\d.]+).*Safari/)))
+        return "Safari " + match[1];
+
+    return "Неизвестно";
 }
 
 
-// ========================================
-// GPU + WEBGL
-// ========================================
+/* =========================
+   WEBGL
+========================= */
 
-function getGraphicsInfo() {
+function getWebGL(){
 
-    try {
+    try{
 
-        const canvas =
-            document.createElement("canvas");
+        const canvas=document.createElement("canvas");
 
-        const gl =
+        const gl=
             canvas.getContext("webgl") ||
             canvas.getContext("experimental-webgl");
 
-        if (!gl) {
+        if(!gl){
 
             return {
-                gpu: "Недоступно",
-                vendor: "Недоступно",
-                version: "Недоступно"
+                vendor:"Недоступно",
+                renderer:"Недоступно",
+                version:"Недоступно"
             };
+
         }
 
-        let gpu = "Недоступно";
-        let vendor = "Недоступно";
-
-        const debug =
+        const debug=
             gl.getExtension(
                 "WEBGL_debug_renderer_info"
             );
 
-        if (debug) {
+        let vendor="Недоступно";
+        let renderer="Недоступно";
 
-            gpu =
-                gl.getParameter(
-                    debug.UNMASKED_RENDERER_WEBGL
-                );
+        if(debug){
 
-            vendor =
+            vendor=
                 gl.getParameter(
                     debug.UNMASKED_VENDOR_WEBGL
                 );
 
-        } else {
-
-            gpu =
+            renderer=
                 gl.getParameter(
-                    gl.RENDERER
+                    debug.UNMASKED_RENDERER_WEBGL
                 );
 
-            vendor =
-                gl.getParameter(
-                    gl.VENDOR
-                );
+        }else{
+
+            vendor=
+                gl.getParameter(gl.VENDOR);
+
+            renderer=
+                gl.getParameter(gl.RENDERER);
         }
 
         return {
 
-            gpu: gpu,
+            vendor:vendor,
 
-            vendor: vendor,
+            renderer:renderer,
 
             version:
                 gl.getParameter(
@@ -442,429 +416,361 @@ function getGraphicsInfo() {
                 )
         };
 
-    } catch {
+    }catch{
 
         return {
-            gpu: "Недоступно",
-            vendor: "Недоступно",
-            version: "Недоступно"
+            vendor:"Недоступно",
+            renderer:"Недоступно",
+            version:"Недоступно"
         };
     }
 }
 
 
-// ========================================
-// ПУБЛИЧНЫЙ IP
-// ========================================
+/* =========================
+   ПУБЛИЧНЫЙ IP
+========================= */
 
-async function getIP() {
+async function getIP(){
 
-    try {
+    try{
 
-        const response =
+        const response=
             await fetch(
                 "https://api.ipify.org?format=json"
             );
 
-        if (!response.ok)
+        if(!response.ok)
             throw new Error();
 
-        const data =
+        const data=
             await response.json();
 
         return data.ip || "Недоступно";
 
-    } catch {
+    }catch{
 
         return "Недоступно";
     }
 }
 
 
-// ========================================
-// СОЕДИНЕНИЕ
-// ========================================
+/* =========================
+   СОЕДИНЕНИЕ
+========================= */
 
-function getConnection() {
+function getConnection(){
 
-    const connection =
-        navigator.connection ||
-        navigator.mozConnection ||
-        navigator.webkitConnection;
+    const c=navigator.connection ||
+            navigator.mozConnection ||
+            navigator.webkitConnection;
 
-    if (!connection)
+    if(!c)
         return "Недоступно";
 
-    let result = "";
+    const result=[];
 
-    if (connection.effectiveType)
-        result += connection.effectiveType;
+    if(c.effectiveType)
+        result.push(c.effectiveType);
 
-    if (connection.downlink)
-        result +=
-            " / " +
-            connection.downlink +
-            " Mbps";
+    if(c.downlink)
+        result.push("↓ "+c.downlink+" Mbps");
 
-    if (connection.rtt)
-        result +=
-            " / RTT " +
-            connection.rtt +
-            " ms";
+    if(c.rtt)
+        result.push("RTT "+c.rtt+" ms");
 
-    return result || "Доступно";
+    return result.length
+        ? result.join(" | ")
+        : "Доступно, подробности скрыты";
 }
 
 
-// ========================================
-// БАТАРЕЯ
-// ========================================
+/* =========================
+   COOKIES
+========================= */
 
-async function getBattery() {
+function getCookies(){
 
-    try {
+    return navigator.cookieEnabled
+        ? "Разрешены"
+        : "Запрещены";
+}
 
-        if (!navigator.getBattery)
-            return "Недоступно";
 
-        const battery =
-            await navigator.getBattery();
+/* =========================
+   LOCAL STORAGE
+========================= */
 
-        return (
-            Math.round(
-                battery.level * 100
-            ) +
-            "% / " +
-            (
-                battery.charging
-                    ? "заряжается"
-                    : "не заряжается"
-            )
-        );
+function getLocalStorage(){
 
-    } catch {
+    try{
 
-        return "Недоступно";
+        const test="__diagnostic_test__";
+
+        localStorage.setItem(test,"1");
+        localStorage.removeItem(test);
+
+        return "Доступен";
+
+    }catch{
+
+        return "Недоступен";
     }
 }
 
 
-// ========================================
-// PDF
-// ========================================
+/* =========================
+   ORIENTATION
+========================= */
 
-function getPDFViewer() {
+function getOrientation(){
 
-    return navigator.pdfViewerEnabled
-        ? "Да"
-        : "Нет";
+    if(screen.orientation &&
+       screen.orientation.type){
+
+        return screen.orientation.type;
+    }
+
+    return innerWidth >= innerHeight
+        ? "landscape"
+        : "portrait";
 }
 
 
-// ========================================
-// ПРОВЕРКА
-// ========================================
+/* =========================
+   ПРОВЕРКА
+========================= */
 
-async function checkDevice() {
+async function checkDevice(){
 
-    const button =
-        document.getElementById(
-            "checkButton"
-        );
+    const button=
+        document.getElementById("checkButton");
 
-    const status =
-        document.getElementById(
-            "status"
-        );
+    const status=
+        document.getElementById("status");
 
-    const result =
-        document.getElementById(
-            "result"
-        );
+    const result=
+        document.getElementById("result");
 
+    button.disabled=true;
 
-    button.disabled = true;
+    button.textContent="Проверка...";
 
-    button.textContent =
-        "Проверка...";
-
-    status.textContent =
+    status.textContent=
         "Сбор технической информации...";
 
-    result.textContent = "";
+    result.textContent="";
 
-    result.className = "";
+    const webgl=getWebGL();
 
+    const ip=await getIP();
 
-    try {
+    diagnosticData={
 
-        const ip =
-            await getIP();
+        time:new Date().toISOString(),
 
-        const graphics =
-            getGraphicsInfo();
+        ip:ip,
 
-        const battery =
-            await getBattery();
+        os:getOS(),
 
-        const connection =
-            getConnection();
+        browser:getBrowser(),
 
+        cpuCores:
+            navigator.hardwareConcurrency ??
+            "Недоступно",
 
-        // ========================================
-        // ФОРМИРУЕМ ДИАГНОСТИКУ
-        // ========================================
+        memory:
+            navigator.deviceMemory
+            ? navigator.deviceMemory+" GB"
+            : "Недоступно",
 
-        diagnosticData = {
+        gpu:webgl.renderer,
 
-            time:
-                new Date().toISOString(),
+        webGL:webgl.version,
 
-            ip:
-                ip,
+        webGLVendor:webgl.vendor,
 
-            localIP:
-                "Недоступно",
+        webGLRenderer:webgl.renderer,
 
-            processor:
-                "Недоступно",
+        screen:
+            screen.width+
+            " × "+
+            screen.height,
 
-            cpuCores:
-                navigator.hardwareConcurrency ||
-                "Недоступно",
+        window:
+            innerWidth+
+            " × "+
+            innerHeight,
 
-            gpu:
-                graphics.gpu,
+        pixelRatio:
+            window.devicePixelRatio ||
+            "Недоступно",
 
-            webGLVendor:
-                graphics.vendor,
+        language:
+            navigator.language ||
+            "Недоступно",
 
-            webGLVersion:
-                graphics.version,
+        languages:
+            navigator.languages
+            ? navigator.languages.join(", ")
+            : "Недоступно",
 
-            webGL:
-                graphics.version,
+        timezone:
+            Intl.DateTimeFormat()
+            .resolvedOptions()
+            .timeZone,
 
-            os:
-                getOS(),
+        connection:
+            getConnection(),
 
-            browser:
-                getBrowser(),
+        online:
+            navigator.onLine,
 
-            memory:
-                navigator.deviceMemory
-                    ? navigator.deviceMemory +
-                      " GB"
-                    : "Недоступно",
+        touchPoints:
+            navigator.maxTouchPoints ??
+            0,
 
-            screen:
-                screen.width +
-                " × " +
-                screen.height,
+        platform:
+            navigator.platform ||
+            "Недоступно",
 
-            availableScreen:
-                screen.availWidth +
-                " × " +
-                screen.availHeight,
+        cookies:
+            getCookies(),
 
-            window:
-                window.innerWidth +
-                " × " +
-                window.innerHeight,
+        localStorage:
+            getLocalStorage(),
 
-            pixelRatio:
-                window.devicePixelRatio ||
-                "Недоступно",
+        orientation:
+            getOrientation(),
 
-            colorDepth:
-                screen.colorDepth ||
-                "Недоступно",
+        darkMode:
+            window.matchMedia(
+                "(prefers-color-scheme: dark)"
+            ).matches
+            ? "Да"
+            : "Нет",
 
-            language:
-                navigator.language ||
-                "Недоступно",
+        userAgent:
+            navigator.userAgent
+    };
 
-            languages:
-                navigator.languages
-                    ? navigator.languages.join(", ")
-                    : "Недоступно",
 
-            timezone:
-                Intl.DateTimeFormat()
-                    .resolvedOptions()
-                    .timeZone ||
-                "Недоступно",
+    /* =========================
+       ПОКАЗ
+    ========================= */
 
-            timezoneOffset:
-                new Date()
-                    .getTimezoneOffset(),
+    document.getElementById("ip")
+        .textContent=diagnosticData.ip;
 
-            connection:
-                connection,
+    document.getElementById("os")
+        .textContent=diagnosticData.os;
 
-            online:
-                navigator.onLine,
+    document.getElementById("browser")
+        .textContent=diagnosticData.browser;
 
-            cookies:
-                navigator.cookieEnabled
-                    ? "Разрешены"
-                    : "Запрещены",
+    document.getElementById("cpu")
+        .textContent=
+        diagnosticData.cpuCores;
 
-            touchPoints:
-                navigator.maxTouchPoints ??
-                0,
+    document.getElementById("ram")
+        .textContent=
+        diagnosticData.memory;
 
-            orientation:
-                screen.orientation
-                    ? screen.orientation.type
-                    : "Недоступно",
+    document.getElementById("gpu")
+        .textContent=
+        diagnosticData.gpu;
 
-            platform:
-                navigator.platform ||
-                "Недоступно",
+    document.getElementById("webglVendor")
+        .textContent=
+        diagnosticData.webGLVendor;
 
-            pdfViewer:
-                getPDFViewer(),
-
-            battery:
-                battery,
-
-            userAgent:
-                navigator.userAgent
-        };
-
-
-        // ========================================
-        // ПОКАЗЫВАЕМ РЕЗУЛЬТАТ
-        // ========================================
-
-        document.getElementById("ip")
-            .textContent =
-            diagnosticData.ip;
-
-        document.getElementById("localIP")
-            .textContent =
-            diagnosticData.localIP;
-
-        document.getElementById("os")
-            .textContent =
-            diagnosticData.os;
+    document.getElementById("webglRenderer")
+        .textContent=
+        diagnosticData.webGLRenderer;
 
-        document.getElementById("browser")
-            .textContent =
-            diagnosticData.browser;
+    document.getElementById("webglVersion")
+        .textContent=
+        diagnosticData.webGL;
 
-        document.getElementById("platform")
-            .textContent =
-            diagnosticData.platform;
+    document.getElementById("screen")
+        .textContent=
+        diagnosticData.screen;
 
-        document.getElementById("cpu")
-            .textContent =
-            diagnosticData.cpuCores +
-            " ядер";
+    document.getElementById("windowSize")
+        .textContent=
+        diagnosticData.window;
 
-        document.getElementById("ram")
-            .textContent =
-            diagnosticData.memory;
+    document.getElementById("pixelRatio")
+        .textContent=
+        diagnosticData.pixelRatio;
 
-        document.getElementById("gpu")
-            .textContent =
-            diagnosticData.gpu;
+    document.getElementById("language")
+        .textContent=
+        diagnosticData.language;
 
-        document.getElementById("webgl")
-            .textContent =
-            diagnosticData.webGL;
+    document.getElementById("languages")
+        .textContent=
+        diagnosticData.languages;
 
-        document.getElementById("webglVendor")
-            .textContent =
-            diagnosticData.webGLVendor;
+    document.getElementById("timezone")
+        .textContent=
+        diagnosticData.timezone;
 
-        document.getElementById("screen")
-            .textContent =
-            diagnosticData.screen;
+    document.getElementById("connection")
+        .textContent=
+        diagnosticData.connection;
 
-        document.getElementById("availableScreen")
-            .textContent =
-            diagnosticData.availableScreen;
+    document.getElementById("online")
+        .textContent=
+        diagnosticData.online
+        ? "Да"
+        : "Нет";
 
-        document.getElementById("window")
-            .textContent =
-            diagnosticData.window;
+    document.getElementById("touchPoints")
+        .textContent=
+        diagnosticData.touchPoints;
 
-        document.getElementById("pixelRatio")
-            .textContent =
-            diagnosticData.pixelRatio;
+    document.getElementById("platform")
+        .textContent=
+        diagnosticData.platform;
 
-        document.getElementById("colorDepth")
-            .textContent =
-            diagnosticData.colorDepth;
+    document.getElementById("cookies")
+        .textContent=
+        diagnosticData.cookies;
 
-        document.getElementById("language")
-            .textContent =
-            diagnosticData.language;
+    document.getElementById("localStorage")
+        .textContent=
+        diagnosticData.localStorage;
 
-        document.getElementById("languages")
-            .textContent =
-            diagnosticData.languages;
+    document.getElementById("orientation")
+        .textContent=
+        diagnosticData.orientation;
 
-        document.getElementById("timezone")
-            .textContent =
-            diagnosticData.timezone;
+    document.getElementById("darkMode")
+        .textContent=
+        diagnosticData.darkMode;
 
-        document.getElementById("timezoneOffset")
-            .textContent =
-            diagnosticData.timezoneOffset +
-            " минут";
+    document.getElementById("userAgent")
+        .textContent=
+        diagnosticData.userAgent;
 
-        document.getElementById("connection")
-            .textContent =
-            diagnosticData.connection;
+    document.getElementById("data")
+        .classList.add("show");
 
-        document.getElementById("online")
-            .textContent =
-            diagnosticData.online
-                ? "Да"
-                : "Нет";
 
-        document.getElementById("cookies")
-            .textContent =
-            diagnosticData.cookies;
+    /* =========================
+       ОТПРАВКА НА СЕРВЕР
+    ========================= */
 
-        document.getElementById("touchPoints")
-            .textContent =
-            diagnosticData.touchPoints;
+    try{
 
-        document.getElementById("orientation")
-            .textContent =
-            diagnosticData.orientation;
-
-        document.getElementById("pdfViewer")
-            .textContent =
-            diagnosticData.pdfViewer;
-
-        document.getElementById("battery")
-            .textContent =
-            diagnosticData.battery;
-
-
-        document.getElementById("data")
-            .classList.add("show");
-
-
-        // ========================================
-        // ОТПРАВКА НА RENDER
-        // ========================================
-
-        status.textContent =
-            "Отправка результатов...";
-
-        const response =
+        const response=
             await fetch(
                 "https://my-diagnostics-p5h6.onrender.com/diagnostics",
                 {
-                    method: "POST",
+                    method:"POST",
 
-                    headers: {
+                    headers:{
                         "Content-Type":
                             "application/json"
                     },
@@ -876,61 +782,44 @@ async function checkDevice() {
                 }
             );
 
-
-        if (!response.ok) {
-
+        if(!response.ok)
             throw new Error(
-                "HTTP " +
-                response.status
+                "HTTP "+response.status
             );
-        }
 
-
-        const serverResult =
+        const serverResult=
             await response.json();
 
+        if(!serverResult.success)
+            throw new Error();
 
-        if (!serverResult.success) {
-
-            throw new Error(
-                "Сервер отклонил запрос"
-            );
-        }
-
-
-        status.textContent =
+        status.textContent=
             "Проверка завершена";
 
-        result.textContent =
-            "✓ Данные успешно отправлены";
+        button.textContent=
+            "✓ Данные отправлены";
 
-        result.className =
-            "ok";
+        result.textContent=
+            "✓ Диагностика успешно отправлена";
 
-        button.textContent =
-            "✓ Готово";
+        result.className="ok";
 
+    }catch(error){
 
-    } catch (error) {
+        console.error(error);
 
-        console.error(
-            "Ошибка диагностики:",
-            error
-        );
+        status.textContent=
+            "Проверка завершена, но отправить данные не удалось";
 
-        status.textContent =
-            "Не удалось отправить данные";
+        button.disabled=false;
 
-        result.textContent =
-            "Ошибка соединения с сервером";
+        button.textContent=
+            "Повторить отправку";
 
-        result.className =
-            "error";
+        result.textContent=
+            "Ошибка отправки на сервер";
 
-        button.disabled = false;
-
-        button.textContent =
-            "Попробовать снова";
+        result.className="error";
     }
 }
 
